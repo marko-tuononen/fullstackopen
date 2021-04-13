@@ -1,0 +1,30 @@
+selain->palvelin: HTTP GET https://studies.cs.helsinki.fi/exampleapp/spa
+palvelin-->selain: HTTP 304, sivun html-koodi
+
+note over selain:
+sivunlataus saa aikaan tyylien lataamisen .. 
+end note
+
+selain->palvelin: HTTP GET https://studies.cs.helsinki.fi/exampleapp/main.css
+palvelin-->selain: HTTP 304, sivun tyylitiedot (css)
+
+note over selain:
+.. ja sivuun liittyvän js-koodin lataamisen
+end note
+
+selain->palvelin: HTTP GET https://studies.cs.helsinki.fi/exampleapp/spa.js
+palvelin-->selain: HTTP 304, sivuun liittyvä js-koodi
+
+note over selain:
+selain alkaa suorittaa js-koodia
+joka pyytää JSON-datan palvelimelta
+end note
+
+selain->palvelin: HTTP GET https://studies.cs.helsinki.fi/exampleapp/data.json
+palvelin-->selain: [{content: "jojo", date: "2021-04-13T18:03:59.917Z"}, {content: ..}]
+
+note over selain:
+selain suorittaa tapahtumankäsittelijän
+joka renderöi muistiinpanot näytölle
+end note
+

@@ -1,0 +1,10 @@
+selain->palvelin: HTTP POST https://studies.cs.helsinki.fi/exampleapp/new_note_spa
+palvelin-->selain: HTTP 201, {"message":"note created"}
+
+note over selain:
+palvelin ei pyydä ei pyydä uudelleenohjausta
+selain pysyy samalla sivulla eikä tee muita http-pyyntöjä
+js-koodi lisää noten näkymään ja selain rendaa päivitetyn näkymän
+end note
+
+

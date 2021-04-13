@@ -1,2 +1,2 @@
 # fullstackopen
-Exercises for the Full Stack Open 2021 course.
+Tasks for the Full Stack Open 2021 course.
