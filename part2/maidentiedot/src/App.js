@@ -6,42 +6,48 @@ const Filter = ({filter, onChange}) => {
     <div>filter shown with <input value={filter} onChange={onChange}/></div>
   )
 }
-const FilteredList = ({items, filter}) => {
+
+const ItemRow = ({item, setFilter}) => {
+  return (
+    <div>
+      {item.name}
+      <button onClick={() => setFilter(item.name)}>show</button>
+    </div>
+  )
+}
+
+const ItemDetails = ({item}) => {
+  return (
+    <div>
+      <h1>{item.name}</h1>
+      <p>capital {item.capital}</p>
+      <p>population {item.population}</p>
+      <h2>languages</h2>
+      <ul>
+        {item.languages.map(language => <li>{language.name}</li>)}
+      </ul>
+      <img src={item.flag} width="500"/>
+    </div>
+  )
+}
+
+const FilteredList = ({items, filter, setFilter}) => {
   const matchingItems = items.filter(filter)
   if (matchingItems.length > 10) {
-    return (
-      <div>
-        too many matches, please specify another filter
-      </div>
-    )
+    return (<div>too many matches, please specify another filter</div>)
   } else if (matchingItems.length > 1) {
     return (
       <div>
-        {matchingItems.map(item => <p key={item.alpha2Code}>{item.name}</p>)}
+        {matchingItems.map(item => <ItemRow key={item.alpha2Code} item={item} setFilter={setFilter} />)}
       </div>
     )
   } else if (matchingItems.length === 1) {
-    return (
-      <div>
-        <h1>{matchingItems[0].name}</h1>
-        <p>capital {matchingItems[0].capital}</p>
-        <p>population {matchingItems[0].population}</p>
-        <h2>languages</h2>
-        <ul>
-          {matchingItems[0].languages.map(language => <li>{language.name}</li>)}
-        </ul>
-        <img src={matchingItems[0].flag} width="500"/>
-      </div>
-    )
+    return (<ItemDetails item={matchingItems[0]} />)
   } else {
-    return (
-      <div>
-        no matches found, please specify another filter
-      </div>
-    )
+    return (<div>no matches found, please specify another filter</div>)
   }
 }
-// 
+
 const App = () => {
   const [ countries, setCountries ] = useState([])
   const [ filter, setFilter ] = useState('')
@@ -57,7 +63,11 @@ const App = () => {
   return (
     <div>
       <Filter filter={filter} onChange={handleFilterChange} />
-      <FilteredList items={countries} filter={country => country.name.toUpperCase().indexOf(filter.toUpperCase()) !== -1} />
+      <FilteredList 
+        items={countries} 
+        filter={country => country.name.toUpperCase().indexOf(filter.toUpperCase()) !== -1} 
+        setFilter={setFilter}
+      />
     </div>
   )
 }
