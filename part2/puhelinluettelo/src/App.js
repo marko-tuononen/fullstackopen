@@ -1,4 +1,7 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import axios from 'axios'
+// start json-server
+//   npx json-server --port=3001 --watch db.json
 
 const Filter = ({filter, onChange}) => {
   return (
@@ -41,6 +44,12 @@ const App = () => {
   const [ newNumber, setNewNumber ] = useState('')
   const [ nameFilter, setNameFilter ] = useState('')
 
+  useEffect(() => {
+    axios
+      .get('http://localhost:3001/persons')
+      .then(response => setPersons(response.data))
+  }, [])
+
   const addPerson = event => {
     event.preventDefault()
     if (persons.filter(person => person.name === newName).length) {
@@ -63,7 +72,7 @@ const App = () => {
   const handleNameFilterChange = event => {
     setNameFilter(event.target.value)
   }
-  
+
   return (
     <div>
       <h2>Phonebook</h2>
