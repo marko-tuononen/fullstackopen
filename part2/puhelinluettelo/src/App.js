@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import axios from 'axios'
+import personService from './services/persons'
 // start json-server
 //   npx json-server --port=3001 --watch db.json
 
@@ -32,7 +32,6 @@ const PersonList = ({persons, nameFilter}) => {
     </div>
   )
 }
-// 
 const App = () => {
   const [persons, setPersons] = useState([
     { id: 1, name: 'Arto Hellas', number: '040-123456' },
@@ -44,11 +43,7 @@ const App = () => {
   const [ newNumber, setNewNumber ] = useState('')
   const [ nameFilter, setNameFilter ] = useState('')
 
-  useEffect(() => {
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => setPersons(response.data))
-  }, [])
+  useEffect(() => personService.getAll().then(data => setPersons(data)), [])
 
   const addPerson = event => {
     event.preventDefault()
@@ -62,11 +57,8 @@ const App = () => {
       id: persons.length + 1,
     }
   
-    axios
-      .post('http://localhost:3001/persons', personObject)
-      .then(response => {
-        console.log(response)
-    })
+    personService.create(personObject).then(data => console.log(data))
+    
     setPersons(persons.concat(personObject))
     setNewName('')
     setNewNumber('')
