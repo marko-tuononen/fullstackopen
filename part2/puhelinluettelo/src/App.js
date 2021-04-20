@@ -23,12 +23,17 @@ const PersonForm = ({name, number, onNameChange, onNumberChange, onSubmit}) => {
     </form>
   )
 }
-const PersonList = ({persons, nameFilter}) => {
+const PersonList = ({persons, nameFilter, handleRemove}) => {
   return (
     <div>
       {persons
         .filter(person => person.name.toUpperCase().indexOf(nameFilter.toUpperCase()) !== -1)
-        .map(person => <p key={person.id}>{person.name}&nbsp;{person.number}</p>)}
+        .map(person => 
+          <p key={person.id}>
+            {person.name}&nbsp;{person.number}&nbsp;<button onClick={handleRemove} value={person.id}>remove</button>
+          </p>
+        )
+      }
     </div>
   )
 }
@@ -57,11 +62,22 @@ const App = () => {
       id: persons.length + 1,
     }
   
-    personService.create(personObject).then(data => console.log(data))
-    
-    setPersons(persons.concat(personObject))
-    setNewName('')
-    setNewNumber('')
+    personService.create(personObject).then(data => {
+      setPersons(persons.concat(personObject))
+      setNewName('')
+      setNewNumber('')  
+    })    
+  }
+
+  const removePerson = event => {
+    event.preventDefault()
+    const idToRemove = parseInt(event.target.value)
+    const personToRemove = persons.find(person => person.id === idToRemove)
+    if (window.confirm(`Remove ${personToRemove.name}?`)) {
+      personService.remove(idToRemove).then(data => {
+        setPersons(persons.filter(person => person.id !== idToRemove))
+      })
+    }
   }
 
   const handleNameChange = event => setNewName(event.target.value)
@@ -83,7 +99,7 @@ const App = () => {
         onSubmit={addPerson}
       />
       <h3>Numbers</h3>
-      <PersonList persons={persons} nameFilter={nameFilter} />
+      <PersonList persons={persons} nameFilter={nameFilter} handleRemove={removePerson} />
     </div>
   )
 }
