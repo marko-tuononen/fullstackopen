@@ -3,6 +3,23 @@ import personService from './services/persons'
 // start json-server
 //   npx json-server --port=3001 --watch db.json
 
+const Notification = ({ message }) => {
+  const notificationStyle = {
+      color: 'green',
+      background: 'lightgrey',
+      fontSize: '20px',
+      borderStyle: 'solid',
+      borderRadius: '5px',
+      padding: '10px',
+      marginBottom: '10px'
+  }
+
+  if (message === null) {
+    return null
+  }
+
+  return (<div style={notificationStyle}>{message}</div>)
+}
 const Filter = ({filter, onChange}) => {
   return (
     <div>filter shown with <input value={filter} onChange={onChange}/></div>
@@ -42,6 +59,7 @@ const App = () => {
   const [ newName, setNewName ] = useState('')
   const [ newNumber, setNewNumber ] = useState('')
   const [ nameFilter, setNameFilter ] = useState('')
+  const [ notificationMessage, setNotificationMessage] = useState(null)
 
   useEffect(() => personService.getAll().then(data => setPersons(data)), [])
 
@@ -60,6 +78,8 @@ const App = () => {
         setPersons(persons.map(person => person.id !== personObject.id ? person : data))        
         setNewName('')
         setNewNumber('')
+        setNotificationMessage(`Updated '${data.name}'`)
+        setTimeout(() => setNotificationMessage(null), 5000)
       })
     } else {
       const personObject = {
@@ -71,6 +91,8 @@ const App = () => {
         setPersons(persons.concat(personObject))
         setNewName('')
         setNewNumber('')  
+        setNotificationMessage(`Added '${data.name}'`)
+        setTimeout(() => setNotificationMessage(null), 5000)
       })      
     }
   }
@@ -82,6 +104,8 @@ const App = () => {
     if (window.confirm(`Remove ${personToRemove.name}?`)) {
       personService.remove(idToRemove).then(data => {
         setPersons(persons.filter(person => person.id !== idToRemove))
+        setNotificationMessage(`Removed '${personToRemove.name}'`)
+        setTimeout(() => setNotificationMessage(null), 5000)
       })
     }
   }
@@ -95,6 +119,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={notificationMessage} />
       <Filter filter={nameFilter} onChange={handleNameFilterChange} />
       <h3>Add a new</h3>
       <PersonForm 
