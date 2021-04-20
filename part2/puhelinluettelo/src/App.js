@@ -38,12 +38,7 @@ const PersonList = ({persons, nameFilter, handleRemove}) => {
   )
 }
 const App = () => {
-  const [persons, setPersons] = useState([
-    { id: 1, name: 'Arto Hellas', number: '040-123456' },
-    { id: 2, name: 'Ada Lovelace', number: '39-44-5323523' },
-    { id: 3, name: 'Dan Abramov', number: '12-43-234345' },
-    { id: 4, name: 'Mary Poppendieck', number: '39-23-6423122' }
-  ])
+  const [persons, setPersons] = useState([])
   const [ newName, setNewName ] = useState('')
   const [ newNumber, setNewNumber ] = useState('')
   const [ nameFilter, setNameFilter ] = useState('')
@@ -52,21 +47,32 @@ const App = () => {
 
   const addPerson = event => {
     event.preventDefault()
-    if (persons.filter(person => person.name === newName).length) {
-      alert(`${newName} is already added to phonebook`)
-      return
+    if (persons.find(person => person.name === newName)) {
+      if (!window.confirm(`${newName} is already added to phonebook, replace old number with new one?`)) {
+        return 
+      }
+      const personObject = {
+        name: newName,
+        number: newNumber,
+        id: persons.find(person => person.name === newName).id,        
+      }
+      personService.update(personObject.id, personObject).then(data => {
+        setPersons(persons.map(person => person.id !== personObject.id ? person : data))        
+        setNewName('')
+        setNewNumber('')
+      })
+    } else {
+      const personObject = {
+        name: newName,
+        number: newNumber,
+        id: persons.length + 1,
+      }  
+      personService.create(personObject).then(data => {
+        setPersons(persons.concat(personObject))
+        setNewName('')
+        setNewNumber('')  
+      })      
     }
-    const personObject = {
-      name: newName,
-      number: newNumber,
-      id: persons.length + 1,
-    }
-  
-    personService.create(personObject).then(data => {
-      setPersons(persons.concat(personObject))
-      setNewName('')
-      setNewNumber('')  
-    })    
   }
 
   const removePerson = event => {
