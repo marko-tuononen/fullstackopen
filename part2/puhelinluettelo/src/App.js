@@ -3,6 +3,23 @@ import personService from './services/persons'
 // start json-server
 //   npx json-server --port=3001 --watch db.json
 
+const Error = ({ message }) => {
+  const errorStyle = {
+      color: 'red',
+      background: 'lightgrey',
+      fontSize: '20px',
+      borderStyle: 'solid',
+      borderRadius: '5px',
+      padding: '10px',
+      marginBottom: '10px'
+  }
+
+  if (message === null) {
+    return null
+  }
+
+  return (<div style={errorStyle}>{message}</div>)
+}
 const Notification = ({ message }) => {
   const notificationStyle = {
       color: 'green',
@@ -60,6 +77,7 @@ const App = () => {
   const [ newNumber, setNewNumber ] = useState('')
   const [ nameFilter, setNameFilter ] = useState('')
   const [ notificationMessage, setNotificationMessage] = useState(null)
+  const [ errorMessage, setErrorMessage] = useState(null)
 
   useEffect(() => personService.getAll().then(data => setPersons(data)), [])
 
@@ -80,6 +98,10 @@ const App = () => {
         setNewNumber('')
         setNotificationMessage(`Updated '${data.name}'`)
         setTimeout(() => setNotificationMessage(null), 5000)
+      }).catch(error => {
+        setPersons(persons.filter(person => person.id !== personObject.id))
+        setErrorMessage(`Person '${personObject.name}' was already removed from server`)
+        setTimeout(() => setErrorMessage(null), 5000)
       })
     } else {
       const personObject = {
@@ -120,6 +142,7 @@ const App = () => {
     <div>
       <h2>Phonebook</h2>
       <Notification message={notificationMessage} />
+      <Error message={errorMessage} />
       <Filter filter={nameFilter} onChange={handleNameFilterChange} />
       <h3>Add a new</h3>
       <PersonForm 
